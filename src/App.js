@@ -1,5 +1,5 @@
 import "./App.css";
-import { getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import "bootstrap/dist/css/bootstrap.min.css";
 import banner from "./images/Flickr.jpeg";
 import user from "./images/login-user.jpeg";
@@ -13,8 +13,10 @@ const auth = getAuth(app);
 
 function App() {
 
+  const [resgistered, setResgistered]= useState[''];
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleEmailBlur = (event) => {
     setEmail(event.target.value);
@@ -24,7 +26,16 @@ function App() {
   };
 
   const handleFormSubmit = (event) => {
-    console.log("submitted", email, password);
+    // console.log("submitted", email, password);
+    createUserWithEmailAndPassword(auth, email, password)
+    .then(result => {
+      const user = result.user;
+      console.log(user);
+    })
+    .catch(error => {
+      // console.error(error);
+      setError(error.message);
+    })
     event.preventDefault();
   };
 
@@ -42,7 +53,7 @@ function App() {
         <Form onSubmit={handleFormSubmit}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
-            <Form.Control onBlur={handleEmailBlur} type="email" placeholder="Enter email" />
+            <Form.Control onBlur={handleEmailBlur} type="email" placeholder="Enter email" required/>
             <Form.Text className="text-muted">
               We'll never share your email with anyone else.
             </Form.Text>
@@ -50,7 +61,7 @@ function App() {
 
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>Password</Form.Label>
-            <Form.Control onBlur={handlePasswordBlur} type="password" placeholder="Password" />
+            <Form.Control onBlur={handlePasswordBlur} type="password" placeholder="Password" required/>
           </Form.Group>
           <Button variant="primary" type="submit">
             Submit
